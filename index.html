@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+
+  <title>Frontend Mentor | Product list with cart</title>
+
+  <!-- Bootstrap CSS v5.2.1 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/window.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<body>
+  <div ng-app="Store" ng-controller="productCtrl">
+
+
+    <div ng-if="orderConfirmed" id="window-notice" class="window-notice modal-confirmed card-body">
+      <div class="modal-content content">
+        <div>
+          <img class="icon" src="assets/images/icon-order-confirmed.svg" alt="" srcset="">
+        </div>
+        <div>
+          <h1 class="page-title">Order Confirmed</h1>
+          <h6 class="page-subtitle">We hope you enjoy your food</h6>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="cart cart-filled">
+              <div class="row order " ng-repeat="x in carrito">
+                <div class="col-3"><img class="icon" src="{{x.image}}" alt="" srcset="">
+                </div>
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="product-name  ">
+                        <p>{{x.name}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" style="margin-top: 7px !important;">
+                    <div class="col-4 fit-content ">
+                      <p id="cant" class="text-10px">x{{x.cantidad}}</p>
+                    </div>
+                    <div class="col-4 fit-content ">
+                      <p id="price" class="text-10px">@ ${{x.price | number:2}}</p>
+                    </div>
+                    <div class="col-4 fit-content "></div>
+                  </div>
+                </div>
+                <div class="col-3 ">
+                  <p class="sub-t-p" id="sub-total-price">${{x.price * x.cantidad | number:2}}</p>
+                </div>
+              </div>
+              <div class="total-order row">
+                <div class="pr col-8">
+                  <p id="tt">Total Order</p>
+                </div>
+                <div class="pr col-4">
+                  <p id="total-price">${{precioTotal() | number:2}}</p>
+                </div>
+              </div>
+              <div class="row col-12 ">
+                <a class="btn2 btn-default shipbtn text-center starNewOrderbtn" ng-click="starNewOrder()">Start New Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="main-title">
+      <h1 class="page-title"> Desserts</h1>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8 row" style="margin-left: 10px !important;">
+        <div class="col-md-4" ng-repeat="x in products">
+          <div class="card">
+            <div class="card-body">
+              <div class="picture">
+                <img ng-class="{'border-hover': cantidadEnCarrito(x) > 0}" class="img-mobile" src="{{x.image.mobile}}">
+                <img ng-class="{'border-hover': cantidadEnCarrito(x) > 0}" class="img-tablet" src="{{x.image.tablet}}">
+                <img ng-class="{'border-hover': cantidadEnCarrito(x) > 0}" class="img-desktop"
+                  src="{{x.image.desktop}}">
+
+                <a ng-if="cantidadEnCarrito(x) == 0" ng-click="agregarAlCarrito(x)"
+                  class="btn1 btn-default align-items-center">
+                  <img class="icon" src="assets/images/icon-add-to-cart.svg">
+                  <p style="margin: 0 5% !important;">Add to Cart</p>
+                </a>
+
+                <a ng-if="cantidadEnCarrito(x) > 0" class="btn2 btn-default row">
+                  <i ng-click="disminuirDelCarrito(x)" class="bi bi-dash-circle-dotted col-2"
+                    style="padding-left: 2px !important;"></i>
+                  <p id="cant" class="col-8 text-center" style="padding-left: 2px !important;">{{cantidadEnCarrito(x)}}
+                  </p>
+                  <i ng-click="agregarAlCarrito(x)" class="bi bi-plus-circle-dotted col-2"></i>
+                </a>
+
+              </div>
+              <div class="procut-tipe ">
+                <p>{{x.category}}</p>
+              </div>
+              <div class="product-name ">
+                <p>{{x.name}}</p>
+              </div>
+              <div class="product-price ">
+                <p>${{x.price | number:2}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-4" style="margin: 0 !important; padding: 0 !important;">
+        <div class="col-md-12" ng-if="cantidadTotal()==0">
+          <div class="card ">
+            <div class="card-body">
+              <div class="cart">
+                <div>
+                  <h1>Your Cart (0)</h1>
+                </div>
+                <div>
+                  <img id="empty-cart" src="assets/images/illustration-empty-cart.svg">
+                </div>
+                <div>
+                  <p id="empty-cart">Your added items will appear here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12" ng-if="!cantidadTotal()==0">
+          <div class="card ">
+            <div class="card-body">
+              <div  class="cart cart-filled margin-neg">
+                <div>
+                  <h1>Your Cart ({{cantidadTotal()}})</h1>
+                </div>
+                <div class="order" ng-repeat="p in carrito">
+                  <div class="product-name row ">
+                    <div class="col-9">
+                      <div class="row ll">
+                        <div class="col-12">
+                          <div class="product-name ">
+                            <p>{{p.name}}</p>
+                          </div>
+                        </div>
+                        <div class="col-3 fit-content ">
+                          <p id="cant">x{{p.cantidad}}</p>
+                        </div>
+                        <div class="col-3 fit-content ">
+                          <p id="price">@ ${{p.price | number:2}}</p>
+                        </div>
+                        <div class="col-3 fit-content ">
+                          <p id="sub-total-price">${{p.price * p.cantidad | number:2}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="close-btn" ng-click="eliminarDelCarrito(p)" class="col-3"><i class="bi bi-x-circle"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="total-order row">
+                  <div class="pr col-8">
+                    <p id="tt">Total Order</p>
+                  </div>
+                  <div class="pr col-4">
+                    <p id="total-price">${{precioTotal() | number:2}}</p>
+                  </div>
+                </div>
+                <div class="dec text-center">
+                  <p class="text-center" style="align-items: center;"> <img src="assets/images/icon-carbon-neutral.svg"> This is a <strong>carbon-neutral</strong>
+                    delivery
+                  </p>
+                </div>
+                <div class="row col-12 ">
+                  <a class="btn2 btn-default shipbtn text-center" ng-click="confirmarOrder()">Confirm Order</a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+    <div class="attribution">
+      Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
+      Coded by <a href="#">Your Name Here</a>.
+    </div>
+
+    <script src="assets/js/script.js"></script>
+  </div>
+</body>
+
+</html>
